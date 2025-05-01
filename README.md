@@ -7,6 +7,12 @@ A clean and elegant web app that measures user reaction time. Fully client-side,
 
 ---
 
+🎞️ 效果预览 | Live Preview
+![Yulan](https://github.com/user-attachments/assets/8c2b4251-fa4f-4324-af19-8fb16e9cccb8)
+![Yulan2](https://github.com/user-attachments/assets/7bf16c31-60b1-40ca-b7b2-328a965f5518)
+
+---
+
 ### 🌟 主要特点 | Key Features
 
 - ⏱️ **反应时间测试**  
