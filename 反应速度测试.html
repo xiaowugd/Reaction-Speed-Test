@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反应速度测试</title>
+<style>
+/* 颜色变量定义 */
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #dbeafe;
+  --success: #10b981;
+  --warning: #f43f5e;
+  --bg-light: #f8fafc;
+  --bg-dark: #0f172a;
+  --card-light: #ffffff;
+  --card-dark: #1e293b;
+  --text-light: #1e293b;
+  --text-dark: #f1f5f9;
+  --text-muted-light: #64748b;
+  --text-muted-dark: #94a3b8;
+  --border-light: #e2e8f0;
+  --border-dark: #334155;
+  --shadow-light: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-dark: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  --gradient: linear-gradient(135deg, #3b82f6, #60a5fa);
+  --gradient-hover: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 主体样式 */
+body {
+  font-family: system-ui, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* 深色模式样式 */
+body.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+/* 应用容器 */
+.app-container {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 头部样式 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: background-color 0.2s;
+}
+
+body.dark-mode .theme-toggle:hover,
+.theme-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 卡片组件样式 */
+.card {
+  background-color: var(--card-light);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .card {
+  background-color: var(--card-dark);
+  box-shadow: var(--shadow-dark);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+body.dark-mode .card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* 控制卡片样式 */
+.controls-card {
+  padding: 1.5rem;
+}
+
+.controls-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--text-light);
+}
+
+body.dark-mode .controls-title {
+  color: var(--text-dark);
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* 下拉选择框样式 */
+.select-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 150px;
+}
+
+select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-light);
+  background-color: var(--card-light);
+  color: var(--text-light);
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+body.dark-mode select {
+  border-color: var(--border-dark);
+  background-color: var(--card-dark);
+  color: var(--text-dark);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* 按钮样式 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--gradient);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.2), 0 2px 4px -1px rgba(2, 132, 199, 0.1);
+}
+
+.btn-primary:hover {
+  background: var(--gradient-hover);
+  box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3), 0 4px 6px -2px rgba(2, 132, 199, 0.1);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-light);
+}
+
+body.dark-mode .btn-outline {
+  border-color: var(--border-dark);
+  color: var(--text-dark);
+}
+
+.btn-outline:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 测试区域样式 */
+.test-area {
+  height: 200px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-muted-light);
+  user-select: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+body.dark-mode .test-area {
+  color: var(--text-muted-dark);
+}
+
+.test-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.test-area.ready {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: var(--warning);
+}
+
+.test-area.go {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+
+.test-area.go.pop {
+  animation: pop 0.18s ease-out;
+}
+
+.test-area.shake {
+  animation: shake 0.32s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+/* 统计卡片样式 */
+.stats-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stat {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  transition: background-color 0.3s;
+}
+
+body.dark-mode .stat {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted-light);
+  margin-bottom: 0.25rem;
+}
+
+body.dark-mode .stat-label {
+  color: var(--text-muted-dark);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-value.empty {
+  color: var(--text-muted-light);
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+body.dark-mode .stat-value.empty {
+  color: var(--text-muted-dark);
+}
+
+/* 进度条样式*/
+.progress-container {
+  width: 100%;
+  height: 0.5rem;
+  background-color: var(--border-light);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+body.dark-mode .progress-container {
+  background-color: var(--border-dark);
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--gradient);
+  transition: width 0.3s ease;
+}
+
+/* 模态框样式*/
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  background-color: var(--card-light);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+  animation: scaleIn 0.3s ease-out both;
+}
+
+body.dark-mode .modal-content {
+  background-color: var(--card-dark);
+  box-shadow: var(--shadow-dark);
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+body.dark-mode .modal-header {
+  border-color: var(--border-dark);
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-muted-light);
+  transition: background-color 0.2s;
+}
+
+body.dark-mode .close-btn {
+  color: var(--text-muted-dark);
+}
+
+.close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* 结果内容*/
+.result-content {
+  text-align: center;
+  line-height: 1.8;
+}
+
+.result-highlight {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 1rem 0;
+  display: block;
+}
+
+.result-comment {
+  font-size: 1.125rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+body.dark-mode .result-comment {
+  border-color: var(--border-dark);
+}
+
+.typewriter-container {
+  display: inline-block;
+  position: relative;
+}
+
+.typewriter-text {
+  visibility: hidden;
+}
+
+.typewriter-cursor {
+  position: absolute;
+  top: 0;
+  right: -0.5em;
+  width: 0.5em;
+  height: 1.2em;
+  background-color: var(--primary);
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.typewriter-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.3s forwards;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leaderboard {
+  margin-top: 0.5rem;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.dark-mode .leaderboard-item {
+  border-color: var(--border-dark);
+}
+
+.leaderboard-rank {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.leaderboard-rank.top {
+  background: var(--gradient);
+  color: white;
+}
+
+.leaderboard-info {
+  flex: 1;
+}
+
+.leaderboard-time {
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.leaderboard-ms {
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+}
+
+body.dark-mode .leaderboard-ms {
+  color: var(--text-muted-dark);
+}
+
+.leaderboard-best {
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+}
+
+body.dark-mode .leaderboard-best {
+  color: var(--text-muted-dark);
+}
+
+.leaderboard-date {
+  font-size: 0.75rem;
+  color: var(--text-muted-light);
+  margin-left: auto;
+  text-align: right;
+}
+
+body.dark-mode .leaderboard-date {
+  color: var(--text-muted-dark);
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+body.dark-mode .modal-footer {
+  border-color: var(--border-dark);
+}
+
+/* 响应式样式*/
+@media (max-width: 640px) {
+  .app-container {
+    gap: 1rem;
+  }
+
+  .header {
+    padding-bottom: 0.5rem;
+  }
+
+  .controls-card {
+    padding: 1.25rem;
+  }
+
+  .test-area {
+    height: 160px;
+    font-size: 1.125rem;
+  }
+
+  .stats-card {
+    padding: 1rem;
+  }
+
+  .stat {
+    padding: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+
+  .modal-header, .modal-body, .modal-footer {
+    padding: 1rem;
+  }
+
+  .result-highlight {
+    font-size: 2rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- 应用头部 -->
+  <header class="header">
+    <h1 class="app-title">反应速度测试</h1>
+    <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">🌙</button>
+  </header>
+
+  <!-- 控制面板卡片 -->
+  <div class="card controls-card">
+    <h2 class="controls-title">测试设置</h2>
+    <div class="controls">
+      <div class="select-wrapper">
+        <select id="attemptSelect" aria-label="选择测试次数">
+          <option value="1" selected>1次测试</option>
+          <option value="3">3次测试</option>
+          <option value="5">5次测试</option>
+          <option value="custom">自定义次数...</option>
+        </select>
+      </div>
+      <button id="view-board" class="btn btn-primary btn-icon" aria-label="查看排行榜">
+        排行榜
+      </button>
+    </div>
+  </div>
+
+  <!-- 测试区域 -->
+  <div id="area" class="card test-area" role="status" aria-live="polite" aria-label="测试区域">
+    选择次数后，点击这里开始测试
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="card stats-card">
+    <div class="stat">
+      <div class="stat-label">平均反应</div>
+      <div id="avg-stat" class="stat-value empty">- ms</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">最佳成绩</div>
+      <div id="best-stat" class="stat-value empty">- ms</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">测试次数</div>
+      <div id="count-stat" class="stat-value empty">-</div>
+    </div>
+    <!-- 进度条 -->
+    <div class="progress-container" role="progressbar" aria-label="测试进度">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 结果模态框 -->
+<div id="result-modal" class="modal" aria-hidden="true" role="dialog" aria-label="测试结果">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">测试结果</h3>
+      <button id="close-result" class="close-btn" aria-label="关闭">✖️</button>
+    </div>
+    <div class="modal-body">
+      <div class="result-content">
+        <div>您的平均反应时间</div>
+        <span id="result-avg" class="result-highlight">0 ms</span>
+        <div>最佳成绩：<strong id="result-best">0 ms</strong></div>
+        <div id="result-comment" class="result-comment">
+          <div class="typewriter-container">
+            <span class="typewriter-text" id="typewriter-text"></span>
+            <span class="typewriter-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="close-result-btn" class="btn btn-primary">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 排行榜模态框 -->
+<div id="board-modal" class="modal" aria-hidden="true" role="dialog" aria-label="排行榜">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">反应速度排行榜</h3>
+      <button id="close-board" class="close-btn" aria-label="关闭">✖️</button>
+    </div>
+    <div class="modal-body">
+      <div id="board-list" class="leaderboard"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="clear-board" class="btn btn-outline">清空记录</button>
+      <button id="close-board-btn" class="btn btn-primary">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+
+/* 应用状态 */
+const S = {
+  attempts: 1,
+  count: 0,
+  start: 0,
+  results: [],
+  best: Infinity,
+  rankings: JSON.parse(localStorage.getItem("rankings") || "[]"),
+  timers: [],
+  lastAvg: null,
+  lastBest: null
+};
+
+/* DOM */
+const area            = $("#area");
+const select          = $("#attemptSelect");
+const themeToggle     = $("#theme-toggle");
+const resModal        = $("#result-modal");
+const resultAvg       = $("#result-avg");
+const resultBest      = $("#result-best");
+const resultComment   = $("#result-comment");
+const typewriterText  = $("#typewriter-text");
+const closeRes        = $("#close-result");
+const closeResBtn     = $("#close-result-btn");
+const boardBtn        = $("#view-board");
+const boardModal      = $("#board-modal");
+const boardList       = $("#board-list");
+const closeBoard      = $("#close-board");
+const closeBoardBtn   = $("#close-board-btn");
+const clearBoard      = $("#clear-board");
+const avgStat         = $("#avg-stat");
+const bestStat        = $("#best-stat");
+const countStat       = $("#count-stat");
+const progressBar     = $("#progress-bar");
+
+/* 反馈评语配置 */
+const REV=[
+{max:100,texts:["💀你是真人吗？","🤖机器人般的精准与速度！","极快","顶尖","超群","秒杀所有反应挑战，速度惊人！","犹如瞬移般的反应速度！","反应如电，毫无拖延！","这速度比极速的赛车还要惊人！🏎️💨","这速度，不用说，直接胜出！🏆",
+"速度快得令人咋舌！⚡","秒杀操作，速度惊人！💥","反应堪比光速！🌟","你是不是提前知道结果了？","你是怎么做到的？是不是在作弊？","超凡脱俗，无懈可击！","已属于顶尖","远超常规标准！","几乎是人类最快反应之一"]},
+{max:260,texts:["无明显滞后","合格表现","反应超快！","几乎零延迟","快到难以置信","效率极高","响应速度一流","行云流水般顺畅","眼疾手快！","响应速度非常高，几乎不需要等待。","⚡️超快！","💫一瞬","堪比猛禽的捕食反应！","专业级响应表现"]},
+{max:400,texts:["稍慢","一般","普通","中等","尚可","有待提高","需练习","普通水平","中等偏下","反应略慢🐢", "勉强及格✅","继续练习💪","蜗牛在嘲笑你🐌","在梦里反应会更快吗💤","普通人的反应水准","可接受的基准线反应","接近临界值，建议多练习","正常"]},
+{max:500,texts:["反应迟缓","不够敏捷","慢于常人","有待提升","稍显迟钝","偏慢","延迟大师 ⏳","树懒同款 🦥","慢动作回放 🎬","大脑加载中…⏳","快醒醒！😪","对面狙都开镜了，你才刚掏枪","闪现撞墙的水平🚧💥","连人机都比你快 🤖⚡",
+"蚊子叮你都来得及吸血","慢，是另一种优雅的节奏 🍃","快即是慢，慢即是快"]},
+{max:600,texts:["反应偏慢","未达优秀水平","低于竞技标准","容易错失机会","拖累整体表现","不够敏捷","需大幅提升","对手已经赢麻了🏆😂","你的神经在走迷宫吗🌀🤔","这个速度还远远不够！🚶‍♂️","反应太慢了","不错，但还能更快！",
+"慢得像是等待一个世纪！⌛","比我奶奶还慢！👵","像慢悠悠走路的老人家！"]},
+{max:1000,texts:["反应慢得令人失望！","反应像是过时的设备！🖥️","速度太慢，差强人意！⚡","反应迟缓，完全不符合要求！","严重延迟","竞技场景不适用","极慢反应速度","非典型反应表现","恐龙灭绝的新闻你快收到了",
+"比贤者模式还延迟","电竞选手看了直接退役","提示：您的生物版本较旧，建议重开"]},
+{max:10000,texts:["人机都怀疑你是NPC","比地球自转还慢","反应时间几乎无动于衷！","反应慢得像正在睡觉！😴","异常缓慢","严重延迟","需重新测试","几乎无反应","恭喜打破最慢记录！","🐌 蜗牛：要组队赛跑吗？",
+"🎮 你是在用云游戏玩测试吗？","在吗？","反应速度堪比冰川移动","使树懒显得敏捷","测试终止：反应时间过长","🔍 测试结果无效：疑似未专注操作"]},
+];
+
+/* 主题切换 */
+const toggleTheme = () => {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("dark-mode", isDark);
+  updateThemeIcon();
+};
+
+const updateThemeIcon = () => {
+  const isDark = document.body.classList.contains("dark-mode");
+  themeToggle.textContent = isDark ? "☀️" : "🌙";
+};
+
+const initTheme = () => {
+  const savedTheme = localStorage.getItem("dark-mode");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const shouldBeDark = savedTheme === "true" || (savedTheme === null && prefersDark);
+  document.body.classList.toggle("dark-mode", shouldBeDark);
+  updateThemeIcon();
+};
+
+initTheme();
+themeToggle.addEventListener("click", toggleTheme);
+
+/* 工具函数 */
+const clearT = () => { S.timers.forEach(clearTimeout); S.timers.length = 0; };
+const later = (fn, ms) => { const id = setTimeout(fn, ms); S.timers.push(id); return id; };
+const formatDate = () => {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const h = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  return `${y}-${m}-${d} ${h}:${mm}`;
+};
+
+const updateStats = (avg, best) => {
+  if (avg) {
+    avgStat.textContent = `${avg} ms`;
+    avgStat.classList.remove("empty");
+  }
+  if (best && best !== Infinity) {
+    bestStat.textContent = `${best} ms`;
+    bestStat.classList.remove("empty");
+  }
+};
+
+const updateProgress = p => {
+  if (progressBar) progressBar.style.width = (p * 100) + "%";
+};
+
+/* 打字机效果 */
+function advancedTypewriter(text, container, speed){
+  container.innerHTML = '';
+  typewriterText.textContent = text;
+  const chars = Array.from(text);
+  chars.forEach((char,i)=>{
+    const span = document.createElement('span');
+    span.className = 'typewriter-char';
+    span.textContent = char;
+    span.style.animationDelay = `${i*speed}ms`;
+    container.appendChild(span);
+  });
+  const cursor = document.createElement('span');
+  cursor.className = 'typewriter-cursor';
+  container.appendChild(cursor);
+  setTimeout(()=>{cursor.style.display='none';}, chars.length*speed + 500);
+}
+
+let phase = "ready_wait";
+
+select.addEventListener("change",()=>{
+  const v = select.value;
+  if (v === "custom") {
+    const n = parseInt(prompt("输入测试次数","3"),10);
+    if (n > 0) {
+      S.attempts = n;
+      area.textContent = `已选择${n}次，点击这里开始`;
+    }
+  } else {
+    S.attempts = +v;
+    area.textContent = `已选择${v}次，点击这里开始`;
+  }
+  countStat.textContent = S.attempts;
+  countStat.classList.remove("empty");
+  phase = "ready_wait";
+  updateProgress(0);
+});
+
+/* 排行榜按钮及模态 */
+boardBtn.addEventListener("click",()=>{populate();toggle(boardModal,true);});
+closeBoard.addEventListener("click",()=>toggle(boardModal,false));
+closeBoardBtn.addEventListener("click",()=>toggle(boardModal,false));
+clearBoard.addEventListener("click",()=>{
+  if(confirm("确定要清空所有记录吗？此操作不可恢复。")){
+    S.rankings = [];
+    localStorage.setItem("rankings","[]");
+    populate();
+  }
+});
+boardModal.addEventListener("click",e=>{if(e.target===boardModal)toggle(boardModal,false);});
+
+/* 结果模态 */
+closeRes.addEventListener("click",()=>toggle(resModal,false));
+closeResBtn.addEventListener("click",()=>toggle(resModal,false));
+resModal.addEventListener("click",e=>{if(e.target===resModal)toggle(resModal,false);});
+
+document.addEventListener("keydown",e=>{if(e.code==="Space"||e.code==="Enter")clickArea();});
+area.addEventListener("click",clickArea,{passive:true});
+
+function start(){
+  S.count = 0;
+  S.results = [];
+  S.best = Infinity;
+  updateProgress(0);
+  next();
+}
+
+function next(){
+  clearT();
+  phase = "waiting";
+  area.textContent = "准备，变绿后点击";
+  area.className = "card test-area ready";
+  const delay = Math.random()*4400+600;
+  later(()=>{
+    phase="go";
+    S.start = performance.now();
+    area.textContent = "点击！";
+    area.className = "card test-area go pop";
+  }, delay);
+}
+
+function clickArea(){
+  if(phase === "ready_wait") start();
+  else if(phase === "waiting") tooEarly();
+  else if(phase === "go") record();
+}
+
+function tooEarly(){
+  clearT();
+  area.textContent = "太早了！重新准备";
+  area.className = "card test-area shake";
+  later(next,600);
+}
+
+function record(){
+  const rt = (performance.now() - S.start).toFixed(2);
+  S.results.push(+rt);
+  S.best = Math.min(S.best, rt);
+  area.textContent = `本次：${rt} ms`;
+  area.className = "card test-area";
+  updateStats(null, S.best);
+  S.count++;
+  updateProgress(S.count / S.attempts);
+  if(S.count < S.attempts){
+    later(next,800);
+  } else finish();
+}
+
+function finish(){
+  const avg = (S.results.reduce((a,b)=>a+b,0) / S.results.length).toFixed(2);
+  const date = formatDate();
+  S.rankings.push({time:+avg,date:date,best:+S.best.toFixed(2)});
+  S.rankings.sort((a,b)=>a.time-b.time);
+  localStorage.setItem("rankings",JSON.stringify(S.rankings));
+  const bucket = REV.find(r=>avg<=r.max) || REV[REV.length-1];
+  const comment = bucket.texts[Math.floor(Math.random()*bucket.texts.length)];
+  S.lastAvg = avg;
+  S.lastBest = S.best.toFixed(2);
+  resultAvg.textContent = `${avg} ms`;
+  resultBest.textContent = `${S.best.toFixed(2)} ms`;
+  advancedTypewriter(comment, resultComment, 50);
+  updateStats(avg, S.best.toFixed(2));
+  updateProgress(1);
+  toggle(resModal,true);
+  area.textContent = "测试完成，重新选择次数开始";
+  phase = "ready_wait";
+}
+
+function populate(){
+  boardList.innerHTML="";
+  if(!S.rankings.length){
+    boardList.innerHTML=`<div style="text-align:center;padding:2rem 0;color:var(--text-muted-light);"><div style="font-size:3rem;margin-bottom:1rem;">😐</div><p>暂无记录</p></div>`;
+    return;
+  }
+  S.rankings.forEach((r,i)=>{
+    const div=document.createElement("div");
+    div.className="leaderboard-item";
+    const isTop=i<3;
+    if(typeof r==='object'){
+      div.innerHTML=`<div class="leaderboard-rank ${isTop?'top':''}">${i+1}</div><div class="leaderboard-info"><div class="leaderboard-time">${r.time}<span class="leaderboard-ms">ms</span><span class="leaderboard-best">最佳: ${r.best}ms</span></div></div><div class="leaderboard-date">${r.date}</div>`;
+    }else{
+      div.innerHTML=`<div class="leaderboard-rank ${isTop?'top':''}">${i+1}</div><div class="leaderboard-info"><div class="leaderboard-time">${r}<span class="leaderboard-ms">ms</span></div></div>`;
+    }
+    boardList.appendChild(div);
+  });
+}
+
+function toggle(el,show){
+  if(show){
+    el.classList.add("show");
+    el.setAttribute("aria-hidden","false");
+  }else{
+    el.classList.remove("show");
+    el.setAttribute("aria-hidden","true");
+  }
+}
+
+/* 初始化统计区域 */
+countStat.textContent = S.attempts;
+countStat.classList.remove("empty");
+})();
+</script>
+</body>
+</html>
