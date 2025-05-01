@@ -8,8 +8,14 @@ A clean and elegant web app that measures user reaction time. Fully client-side,
 ---
 
 🎞️ 效果预览 | Live Preview
-![Yulan](https://github.com/user-attachments/assets/8c2b4251-fa4f-4324-af19-8fb16e9cccb8)
-![Yulan2](https://github.com/user-attachments/assets/7bf16c31-60b1-40ca-b7b2-328a965f5518)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8c2b4251-fa4f-4324-af19-8fb16e9cccb8" alt="预览图1" width="80%" style="border-radius:20px;" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7bf16c31-60b1-40ca-b7b2-328a965f5518" alt="预览图2" width="80%" style="border-radius:20px;" />
+</p>
 
 ---
 
